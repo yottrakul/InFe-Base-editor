@@ -1,12 +1,39 @@
 import Modal from "@/UI/Model";
+import { randomUUID } from "crypto";
 import { useState } from "react";
 
 type Props = {
   onClose: Function;
+  onCreate: Function
 };
 
-function CreateFactBox({ onClose }: Props) {
+type Fact = {
+    id: string;
+    label: string;
+    fact: string | null;
+  };
+
+function CreateFactBox({ onClose, onCreate }: Props) {
   //State
+  const [nameFact, setnameFact] = useState('');
+  const [desFact, setDesFact] = useState('');
+
+  const handleChangeName = (e: any) => {
+    setnameFact(e.target.value)
+  }
+
+  const handleChangeDes = (e: any) => {
+    setDesFact(e.target.value)
+  }
+
+  const handleCreate = () => {
+    const fact: Fact = {
+        id: Date.now().toString(),
+        label: nameFact,
+        fact: desFact === ''? null : desFact
+    }
+    onCreate(fact);
+  }
 
   // JSX Content
   const body = (
@@ -18,6 +45,8 @@ function CreateFactBox({ onClose }: Props) {
           id="floating_factName"
           className="block text-white py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
+          value={nameFact}
+          onChange={(e) => handleChangeName(e)}
           required
         />
         <label
@@ -34,6 +63,8 @@ function CreateFactBox({ onClose }: Props) {
           id="floating_factDes"
           className="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
+          value={desFact}
+          onChange={(e) => handleChangeDes(e)}
           required
         />
         <label
@@ -55,6 +86,7 @@ function CreateFactBox({ onClose }: Props) {
       body={body}
       confirm_msg={"Add Fact"}
       title={"Add Fact"}
+      confirm={handleCreate}
     />
   );
 }
