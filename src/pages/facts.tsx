@@ -6,7 +6,7 @@ import { BsTrashFill } from "react-icons/bs";
 import { GoPlus } from "react-icons/go";
 import CreateFactBox from "@/components/CreateFactBox";
 
-type Fact = {
+export type Fact = {
   id: string;
   label: string;
   fact: string | null;
@@ -38,7 +38,11 @@ const DUMMY: Array<Fact> = [
 function facts() {
   const [showAddFact, setShowAddFact] = useState(false);
   const [facts, setFacts] = useState(DUMMY);
+  // แก้ไข Fact
+  const [showEditFact, setShowEditFact] = useState(false);
+  const [fact, setFact]: [Fact|null, any] = useState(null);
 
+  //useStateFetch
   const deleteFact = (id: string) => {
     // ติดต่อ DB
     setFacts(prev => {
@@ -49,12 +53,26 @@ function facts() {
   }
 
   const addFact = (fact: Fact) => {
-    console.log(fact)
     // ติดต่อ DB
     const result = facts.concat(fact);
     setFacts(result)
+  }
 
-    console.log(facts)
+  const editFact = (factIn: Fact) => {
+    // ติดต่อ db
+
+    const index = facts.findIndex(fact => {
+      return fact.id === factIn.id
+    })
+
+    if(index < 0) {
+      return;
+    }
+
+    setFacts(prev => {
+      prev[index] = factIn;
+      return prev
+    })
   }
 
   const listFacts = facts.map((fact) => {
@@ -63,7 +81,10 @@ function facts() {
         <span className="font-bold">{fact.label}</span>
         <span className="md:text-xl">{fact.fact? fact.fact : '-'}</span>
         <div className="flex items-center">
-          <MdEditNote className="cursor-pointer mr-2" size={30} />
+          <MdEditNote onClick={() => {
+            setFact(fact);
+            setShowEditFact(true);
+          }} className="cursor-pointer mr-2" size={30} />
           <BsTrashFill onClick={() => deleteFact(fact.id)} className="cursor-pointer text-red-600" size={20} />
         </div>
       </li>
@@ -78,6 +99,7 @@ function facts() {
 
       {/* <Modal show={true}/> */}
       {showAddFact ? <CreateFactBox onClose={setShowAddFact} onCreate={addFact}/> : null}
+      {showEditFact && fact ? <CreateFactBox onClose={setShowEditFact} onEdit={editFact} fact={fact}/> : null}
 
       <div className="h-[calc(100vh-6rem)]">
         <Container className="pt-4 px-2 h-full w-full">

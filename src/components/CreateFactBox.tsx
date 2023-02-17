@@ -1,10 +1,11 @@
 import Modal from "@/UI/Model";
-import { randomUUID } from "crypto";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Props = {
   onClose: Function;
-  onCreate: Function
+  onCreate?: Function;
+  onEdit?: Function;
+  fact?: Fact;
 };
 
 type Fact = {
@@ -13,10 +14,17 @@ type Fact = {
     fact: string | null;
   };
 
-function CreateFactBox({ onClose, onCreate }: Props) {
+function CreateFactBox({ onClose, onCreate, onEdit, fact }: Props) {
   //State
   const [nameFact, setnameFact] = useState('');
   const [desFact, setDesFact] = useState('');
+
+  useEffect(() => {
+    if(onEdit && fact) {
+      setnameFact(fact.label);
+      setDesFact(fact.fact? fact.fact:'');
+    }
+  }, [])
 
   const handleChangeName = (e: any) => {
     setnameFact(e.target.value)
@@ -32,7 +40,22 @@ function CreateFactBox({ onClose, onCreate }: Props) {
         label: nameFact,
         fact: desFact === ''? null : desFact
     }
-    onCreate(fact);
+    if(onCreate) {
+      onCreate(fact);
+    }
+    onClose(false)
+  }
+
+  const handleEdit = () => {
+     if(fact && onEdit) {
+      const newFact: Fact={
+        id: fact.id,
+        label: nameFact,
+        fact: desFact ,
+       }
+       onEdit(newFact)
+     }
+     onClose(false);
   }
 
   // JSX Content
@@ -77,16 +100,13 @@ function CreateFactBox({ onClose, onCreate }: Props) {
     </form>
   );
 
-  // Function To Add Fact
-  const confirm = () => {};
-
   return (
     <Modal
       onClose={onClose}
       body={body}
-      confirm_msg={"Add Fact"}
-      title={"Add Fact"}
-      confirm={handleCreate}
+      confirm_msg={onEdit? "Confirm Edit":"Add Fact"}
+      title={onEdit? "Edit fact":"Add Fact"}
+      confirm={onEdit && !onCreate? handleEdit:handleCreate}
     />
   );
 }
