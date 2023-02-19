@@ -97,6 +97,7 @@ const DUMMY: Array<Rule> = [
 
 function rules() {
   const [showAddRule, setShowAddRule] = useState(false);
+  // fetch rule และ fact เพื่อนำมาใช้ต่อใน CreateRuleBox
   const [rules, setRules] = useState(DUMMY);
   // แก้ไข Rule
   const [showEditRule, setShowEditRule] = useState(false);
@@ -130,17 +131,17 @@ function rules() {
 
     setRules(prev => {
       prev[index] = ruleIn;
-      return prev
+      return [...prev]
     })
   }
 
   const listRules = rules.map((rule) => {
     return (
       <li key={rule.id} className="bg-[#40414E] rounded-xl flex justify-between px-4 py-2 items-center mb-2 cursor-default">
-        <span className="font-bold w-4 text-yellow-500">{rule.preFact_1.label}</span>
+        <span className="font-bold w-4 text-yellow-500">{rule.preFact_1.label !== undefined? rule.preFact_1.label:"DevMode"}</span>
         <span >{rule.preExp? rule.preExp:'->'}</span>
         <span className="font-bold w-4 text-yellow-500">{rule.preFact_2? rule.preFact_2.label:'-'}</span>
-        <span className="font-bold text-green-500">{rule.postFact_1.label}</span>
+        <span className="font-bold text-green-500">{rule.postFact_1.label??"DevMode"}</span>
         <span >{rule.postExp? rule.postExp:'-'}</span>
         <span className="font-bold text-green-500">{rule.postFact_2? rule.postFact_2.label:'-'}</span>
         <div className="flex items-center">

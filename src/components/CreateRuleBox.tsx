@@ -62,7 +62,7 @@ const DUMMY: Array<Fact> = [
 
 function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
   //State
-  const [facts, setFacts] = useState(DUMMY);
+  const [facts, setFacts] = useState(DUMMY); // ติดต่อ database เพื่อทำการดึง fact ทั้งหมด เปลี่ยน dummy เป็น params รับค่า facts
   const [userInput, setUserInput]: [UserInput, any] = useState({
     premise: null,
     premise2: null,
@@ -74,11 +74,16 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
   const [error, setError] = useState(null);
 
   const listSelectFacts = facts.map((fact) => {
-    return <option key={fact.id} value={fact.id}>{fact.label}</option>;
+    return (
+      <option key={fact.id} value={fact.id}>
+        {fact.label}
+      </option>
+    );
   });
 
   useEffect(() => {
     if (onEdit && rule) {
+      console.log(rule)
       setUserInput((prev: UserInput) => {
         prev.premise = rule.preFactId_1;
         prev.premise2 = rule.preFactId_2;
@@ -86,7 +91,7 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
         prev.conclude = rule.postFactId_1;
         prev.conclude2 = rule.postFactId_2;
         prev.operationConclude = rule.postExp;
-        return prev;
+        return {...prev};
       });
     }
   }, []);
@@ -100,6 +105,7 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
   //   };
 
   const handleCreate = () => {
+    // ทำติดต่อฐานข้อมูล
     try {
       if (!userInput.premise) {
         throw new Error("Invalid: Please input premise");
@@ -133,6 +139,7 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
   };
 
   const handleEdit = () => {
+    // ติดต่อฐานข้อมูลด้วย
     try {
       if (rule && onEdit) {
         const newRule: Omit<
@@ -169,11 +176,11 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
             Select 1st Premise
           </label>
           <select
-            value={userInput.premise?? ''}
+            value={userInput.premise ?? ""}
             onChange={(e) => {
               setUserInput((prev: UserInput) => {
-                prev.premise = e.target.value !== '-'? e.target.value: null;
-                return {...prev};
+                prev.premise = e.target.value !== "-" ? e.target.value : null;
+                return { ...prev };
               });
             }}
             id="premise1"
@@ -191,12 +198,12 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
             Select Operation
           </label>
           <select
-            value={userInput.operation?? ''}
+            value={userInput.operation ?? ""}
             onChange={(e) => {
               setUserInput((prev: UserInput) => {
-                prev.operation = e.target.value !== '-'? e.target.value:null;
-                prev.premise2 = e.target.value !== '-'? prev.premise2:null;
-                return {...prev};
+                prev.operation = e.target.value !== "-" ? e.target.value : null;
+                prev.premise2 = e.target.value !== "-" ? prev.premise2 : null;
+                return { ...prev };
               });
             }}
             id="op1"
@@ -215,12 +222,12 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
             Select 2nd Premise
           </label>
           <select
-          disabled={!userInput.operation? true:false}
-            value={userInput.premise2?? ''}
+            disabled={!userInput.operation ? true : false}
+            value={userInput.premise2 ?? ""}
             onChange={(e) => {
               setUserInput((prev: UserInput) => {
-                prev.premise2 = e.target.value !== '-'? e.target.value:null;
-                return {...prev};
+                prev.premise2 = e.target.value !== "-" ? e.target.value : null;
+                return { ...prev };
               });
             }}
             id="premise2"
@@ -241,13 +248,13 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
             Select 1st Conclude
           </label>
           <select
-          value={userInput.conclude?? ''}
-          onChange={(e) => {
-            setUserInput((prev: UserInput) => {
-              prev.conclude = e.target.value !== '-'? e.target.value:null;
-              return {...prev};
-            });
-          }}
+            value={userInput.conclude ?? ""}
+            onChange={(e) => {
+              setUserInput((prev: UserInput) => {
+                prev.conclude = e.target.value !== "-" ? e.target.value : null;
+                return { ...prev };
+              });
+            }}
             id="conclude1"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
@@ -263,12 +270,13 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
             Select Operation
           </label>
           <select
-            value={userInput.operationConclude?? ''}
+            value={userInput.operationConclude ?? ""}
             onChange={(e) => {
               setUserInput((prev: UserInput) => {
-                prev.operationConclude = e.target.value !== '-'? e.target.value:null;
-                prev.conclude2 = e.target.value !== '-'? prev.conclude2:null;
-                return {...prev};
+                prev.operationConclude =
+                  e.target.value !== "-" ? e.target.value : null;
+                prev.conclude2 = e.target.value !== "-" ? prev.conclude2 : null;
+                return { ...prev };
               });
             }}
             id="op2"
@@ -286,13 +294,14 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
             Select 2nd Conclude
           </label>
           <select
-          value={userInput.conclude2?? ''}
-          onChange={(e) => {
-            setUserInput((prev: UserInput) => {
-              prev.conclude2 = e.target.value !== '-'? e.target.value:null;
-              return {...prev};
-            });
-          }}
+            disabled={!userInput.operationConclude ? true : false}
+            value={userInput.conclude2 ?? ""}
+            onChange={(e) => {
+              setUserInput((prev: UserInput) => {
+                prev.conclude2 = e.target.value !== "-" ? e.target.value : null;
+                return { ...prev };
+              });
+            }}
             id="conclude2"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
