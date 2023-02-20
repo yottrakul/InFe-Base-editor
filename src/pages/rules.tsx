@@ -1,11 +1,14 @@
 import Container from "@/UI/Container";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdEditNote } from "react-icons/md";
 import { BsTrashFill } from "react-icons/bs";
 import { GoPlus } from "react-icons/go";
 import CreateRuleBox from "@/components/CreateRuleBox";
 import { Fact } from "./facts";
+import axios from "axios";
+
+const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
 type Rule = {
   id: string;
@@ -95,16 +98,31 @@ const DUMMY: Array<Rule> = [
 },
 ]
 
+const defaultRules: Array<Rule> = [];
+const baseURL = 'http://localhost:8000/api/infer_engine/';
+const baseRuleURL = 'http://localhost:8000/api/rules';
+
 function rules() {
   const [showAddRule, setShowAddRule] = useState(false);
   // fetch rule และ fact เพื่อนำมาใช้ต่อใน CreateRuleBox
-  const [rules, setRules] = useState(DUMMY);
+  
+  const [rules, setRules] = useState(defaultRules);
   // แก้ไข Rule
   const [showEditRule, setShowEditRule] = useState(false);
   const [rule, setRule]: [Rule|null, any] = useState(null);
 
+  useEffect(() => {
+    axios.get(baseURL).then(res => {
+      setRules(res.data);
+    })
+  }, [])
+
   const deleteRule = (id: string) => {
     // ติดต่อ DB
+    axios.delete(`${baseRuleURL}/${id}`).then(res => {
+      console.log(res.data)
+    });
+
     setRules(prev => {
       return prev.filter(rule => {
         return rule.id !== id
@@ -138,7 +156,7 @@ function rules() {
   const listRules = rules.map((rule) => {
     return (
       <li key={rule.id} className="bg-[#40414E] rounded-xl flex justify-between px-4 py-2 items-center mb-2 cursor-default">
-        <span className="font-bold w-4 text-yellow-500">{rule.preFact_1.label !== undefined? rule.preFact_1.label:"DevMode"}</span>
+        <span className="font-bold w-4 text-yellow-500">{rule.preFact_1.label}</span>
         <span >{rule.preExp? rule.preExp:'->'}</span>
         <span className="font-bold w-4 text-yellow-500">{rule.preFact_2? rule.preFact_2.label:'-'}</span>
         <span className="font-bold text-green-500">{rule.postFact_1.label??"DevMode"}</span>

@@ -1,10 +1,11 @@
 import Container from "@/UI/Container";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdEditNote } from "react-icons/md";
 import { BsTrashFill } from "react-icons/bs";
 import { GoPlus } from "react-icons/go";
 import CreateFactBox from "@/components/CreateFactBox";
+import axios, { AxiosError } from "axios";
 
 export type Fact = {
   id: string;
@@ -12,32 +13,17 @@ export type Fact = {
   fact: string | null;
 };
 
-const DUMMY: Array<Fact> = [
-  {
-    id: "c9d81192-d6b9-4be9-b71b-486e6e7e86e6",
-    label: "w",
-    fact: null,
-  },
-  {
-    id: "4c1e3067-23f3-4f3c-bc31-2d4c70430166",
-    label: "e",
-    fact: null,
-  },
-  {
-    id: "d46e14c0-5bf1-4f8f-b1d4-fe36486b454a",
-    label: "c",
-    fact: null,
-  },
-  {
-    id: "58a9cc71-3caa-4ac8-ad55-3e67d378fe5d",
-    label: "f",
-    fact: null,
-  },
+const defaultFact: Array<Fact> = [
 ];
 
 function facts() {
   const [showAddFact, setShowAddFact] = useState(false);
-  const [facts, setFacts] = useState(DUMMY);
+  const [facts, setFacts] = useState(defaultFact);
+  useEffect(() => {
+    axios.get('http://localhost:8000/api/facts').then(res => {
+      setFacts(res.data);
+    })
+  }, [])
   // แก้ไข Fact
   const [showEditFact, setShowEditFact] = useState(false);
   const [fact, setFact]: [Fact|null, any] = useState(null);
@@ -45,6 +31,7 @@ function facts() {
   //useStateFetch
   const deleteFact = (id: string) => {
     // ติดต่อ DB
+    axios.delete(`http://localhost:8000/api/facts/${id}`);
     setFacts(prev => {
       return prev.filter(fact => {
         return fact.id !== id
@@ -52,27 +39,40 @@ function facts() {
     })
   }
 
-  const addFact = (fact: Fact) => {
+  const addFact = async (fact: Fact) => {
     // ติดต่อ DB
-    const result = facts.concat(fact);
-    setFacts(result)
+    try {
+      console.log(fact)
+      const res = await axios.post('http://localhost:8000/api/facts', fact)
+      const result = facts.concat(res.data);
+      setFacts(result)
+    } catch (error: any) {
+      console.log(error.response.data);
+    }
   }
 
   const editFact = (factIn: Fact) => {
     // ติดต่อ db
-
-    const index = facts.findIndex(fact => {
-      return fact.id === factIn.id
-    })
-
-    if(index < 0) {
-      return;
+    try {
+      const res = axios.put(`http://localhost:8000/api/facts/${factIn.id}`, factIn)
+      const index = facts.findIndex(fact => {
+        return fact.id === factIn.id
+      })
+      if(index < 0) {
+        return;
+      }
+      setFacts(prev => {
+        prev[index] = factIn;
+        return prev
+      })
+    } catch (error: any) {
+      console.log(error.response.data)
     }
+    
 
-    setFacts(prev => {
-      prev[index] = factIn;
-      return prev
-    })
+    
+
+    
   }
 
   const listFacts = facts.map((fact) => {

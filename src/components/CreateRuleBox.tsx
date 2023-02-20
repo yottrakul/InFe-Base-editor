@@ -1,5 +1,9 @@
 import Modal from "@/UI/Model";
+import axios from "axios";
 import { useState, useEffect } from "react";
+
+// TODO
+// กันไม่ให้ตั้ง if then มี Rule เหมือนกัน
 
 type Props = {
   onClose: Function;
@@ -37,32 +41,18 @@ type UserInput = {
   operationConclude: string | null;
 };
 
-const DUMMY: Array<Fact> = [
-  {
-    id: "c9d81192-d6b9-4be9-b71b-486e6e7e86e6",
-    label: "w",
-    fact: null,
-  },
-  {
-    id: "4c1e3067-23f3-4f3c-bc31-2d4c70430166",
-    label: "e",
-    fact: null,
-  },
-  {
-    id: "d46e14c0-5bf1-4f8f-b1d4-fe36486b454a",
-    label: "c",
-    fact: null,
-  },
-  {
-    id: "58a9cc71-3caa-4ac8-ad55-3e67d378fe5d",
-    label: "f",
-    fact: null,
-  },
-];
+const defaultFact: Array<Fact> = [];
+const baseURL: string = 'http://localhost:8000/api/facts';
+const ruleURL: string = 'http://localhost:8000/api/rules'
 
 function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
   //State
-  const [facts, setFacts] = useState(DUMMY); // ติดต่อ database เพื่อทำการดึง fact ทั้งหมด เปลี่ยน dummy เป็น params รับค่า facts
+  const [facts, setFacts] = useState(defaultFact); // ติดต่อ database เพื่อทำการดึง fact ทั้งหมด เปลี่ยน dummy เป็น params รับค่า facts
+  useEffect(() => {
+      axios.get(baseURL).then(res => {
+        setFacts(res.data);
+      })
+  }, [])
   const [userInput, setUserInput]: [UserInput, any] = useState({
     premise: null,
     premise2: null,
@@ -104,7 +94,7 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
   //     setDesFact(e.target.value);
   //   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     // ทำติดต่อฐานข้อมูล
     try {
       if (!userInput.premise) {
@@ -118,9 +108,8 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
       }
       const newRule: Omit<
         Rule,
-        "preFact_1" | "preFact_2" | "postFact_1" | "postFact_2"
+        "preFact_1" | "preFact_2" | "postFact_1" | "postFact_2" | "id"
       > = {
-        id: Date.now().toString(),
         preFactId_1: userInput.premise,
         preFactId_2: userInput.premise2,
         preExp: userInput.operation,
@@ -129,7 +118,10 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
         postExp: userInput.operationConclude,
       };
       if (onCreate) {
-        onCreate(newRule);
+        // ติดต่อ DB
+        const res = await axios.post(ruleURL, newRule);
+        console.log(res.data)
+        onCreate(res.data);
       }
       onClose(false);
     } catch (error: any) {
@@ -138,15 +130,15 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
     }
   };
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
     // ติดต่อฐานข้อมูลด้วย
     try {
       if (rule && onEdit) {
         const newRule: Omit<
           Rule,
-          "preFact_1" | "preFact_2" | "postFact_1" | "postFact_2"
+          "preFact_1" | "preFact_2" | "postFact_1" | "postFact_2" | "id"
         > = {
-          id: rule.id,
+          // id: rule.id,
           preFactId_1: userInput.premise!,
           preFactId_2: userInput.premise2,
           preExp: userInput.operation,
@@ -154,7 +146,11 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
           postFactId_2: userInput.conclude2,
           postExp: userInput.operationConclude,
         };
-        onEdit(newRule);
+        const res = await axios.put(`${ruleURL}/${rule.id}`, newRule);
+        if(res.status === 400 || res.status === 500) {
+          throw Error(`Status: ${res.statusText} ${res.data.error}` )
+        }
+        onEdit(res.data);
       }
       onClose(false);
     } catch (error: any) {

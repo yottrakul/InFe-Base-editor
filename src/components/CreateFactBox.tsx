@@ -18,6 +18,7 @@ function CreateFactBox({ onClose, onCreate, onEdit, fact }: Props) {
   //State
   const [nameFact, setnameFact] = useState('');
   const [desFact, setDesFact] = useState('');
+  const [error, setError]: [string|null, any] = useState(null);
 
   useEffect(() => {
     if(onEdit && fact) {
@@ -35,10 +36,14 @@ function CreateFactBox({ onClose, onCreate, onEdit, fact }: Props) {
   }
 
   const handleCreate = () => {
-    const fact: Fact = {
-        id: Date.now().toString(),
+    const fact: Omit<Fact, "id"> = {
         label: nameFact,
         fact: desFact === ''? null : desFact
+    }
+
+    if(fact.label === '') {
+      setError('Invalid: please type label');
+      return;
     }
     if(onCreate) {
       onCreate(fact);
@@ -97,6 +102,7 @@ function CreateFactBox({ onClose, onCreate, onEdit, fact }: Props) {
           Description (ตัวอย่าง : รถติด)
         </label>
       </div>
+      {error? <div className="text-red-500">{error}</div>:null}
     </form>
   );
 
