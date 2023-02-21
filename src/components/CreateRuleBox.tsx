@@ -155,7 +155,7 @@ function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
       onClose(false);
     } catch (error: any) {
       setError(error.message);
-      console.log(error.message);
+      console.log(error.response.data);
     }
   };
 
