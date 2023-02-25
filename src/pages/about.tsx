@@ -93,7 +93,7 @@ function about() {
             Assawin Kengkanna
           </h5>
           <p className="text-neutral-500 dark:text-neutral-400 flex justify-center items-center">
-            <FaPaintBrush className="text-2xl" />
+            <FaPaintBrush className="text-2xl mr-2" />
             <span>UX/UI</span>
           </p>
           <p className="text-2xl flex justify-center items-center mt-2">
