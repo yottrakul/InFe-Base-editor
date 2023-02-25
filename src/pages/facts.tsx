@@ -77,17 +77,17 @@ function facts() {
 
   const listFacts = facts.map((fact) => {
     return (
-      <li key={fact.id} className="bg-[#40414E] rounded-xl flex justify-between px-4 py-2 items-center mb-2 cursor-default">
-        <span className="font-bold">{fact.label}</span>
-        <span className="md:text-xl">{fact.fact? fact.fact : '-'}</span>
-        <div className="flex items-center">
+      <tr key={fact.id} className="border-b border-gray-500">
+        <td className="font-bold">{fact.label}</td>
+        <td className="md:text-xl">{fact.fact? fact.fact : '-'}</td>
+        <td className="flex items-center justify-center py-4">
           <MdEditNote onClick={() => {
             setFact(fact);
             setShowEditFact(true);
           }} className="cursor-pointer mr-2" size={30} />
           <BsTrashFill onClick={() => deleteFact(fact.id)} className="cursor-pointer text-red-600" size={20} />
-        </div>
-      </li>
+        </td>
+      </tr>
     );
   });
 
@@ -102,19 +102,19 @@ function facts() {
       {showEditFact && fact ? <CreateFactBox onClose={setShowEditFact} onEdit={editFact} fact={fact}/> : null}
 
       <div className="h-[calc(100vh-6rem)]">
-        <Container className="pt-4 px-2 h-full w-full">
-          {/* หัวตาราง */}
-          <div className="bg-[#40414E] text-white text-2xl flex justify-between rounded-xl px-4 py-2 uppercase overflow-auto">
-            <h3>Name</h3>
-            <h3>Description</h3>
-            <h3>Edit</h3>
-          </div>
-          {/* หัวตาราง */}
-          <div className="h-[calc(100%-4.5rem)] mt-5 overflow-auto">
-            <ul>
-              {listFacts.length > 0? listFacts:'Fact empty'}
-            </ul>
-          </div>
+        <Container className="pt-4 h-full w-full overflow-x-auto">
+        <table className="relative w-full table-auto border-collapse text-center md:rounded-t-xl overflow-hidden">
+          <thead>
+            <tr className="bg-[#40414E] text-xl">
+              <th className="md:py-3">Name</th>
+              <th className="md:py-3">Description</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {listFacts}
+          </tbody>
+        </table>
         </Container>
         <div className="group rounded-full bg-blue-500 fixed bottom-0 right-0 p-4 mr-6 mb-6 lg:mr-10 lg:mb-10 hover:bg-blue-400 duration-300 shadow-lg shadow-black/50 cursor-pointer">
           <GoPlus

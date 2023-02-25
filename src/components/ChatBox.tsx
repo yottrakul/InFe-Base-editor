@@ -19,7 +19,7 @@ const defaultState: ChatState = {
     save_query: [],
     startNode: [],
 }
-const welcomeMsg = 'สวัสดีค่ะ ฉัน InFe ยินดีรับใช้ กรุณากรอกคำถามที่คุณต้องการค่ะ';
+const welcomeMsg = 'สวัสดีค่ะ ดิฉันชื่อ InFe ดิฉันเป็นระบบถามตอบที่ใช้สร้างการตัดสินใจหรือการวิเคราะห์โดยอัตโนมัติจากข้อมูลที่รับเข้ามาโดยใช้กฎและความรู้ทางด้านต่างๆ กรุณาเขียนคำถามที่คุณต้องการให้ดิฉันตอบค่ะ 🙂';
 
 function ChatBox() {
     const [state, setState] = useState(defaultState);
@@ -53,8 +53,6 @@ function ChatBox() {
         }
     }
 
-    
-
     const resetState = () => {
         try {
             axios.post(`${INFER_ENDPOINT}/start`).then(res => {
@@ -72,7 +70,7 @@ function ChatBox() {
             return res.data
 
         } catch (error: any) {
-            console.log(error.message)
+            // console.log(error.message)
             return [];
         }
     }
@@ -123,13 +121,13 @@ function ChatBox() {
             const newChatSpace = chatSpace;
             // ถ้า result === null ให้สร้าง BotDialog บอกว่าไม่ฒีคำตอบและแสดงผลลัพธ์
             if(resultState.result === null) {
-                newChatSpace.push(<BotDialog key={Date.now()} result={resultState.result} msg={'ไม่มีคำตอบ เพราะ...'} state={resultState}/>)
+                newChatSpace.push(<BotDialog key={Date.now()} pull={chatScroll} result={resultState.result} msg={'❌ไม่มีคำตอบ เพราะ...'} state={resultState}/>)
                 setChatSpace(newChatSpace);
 
             }
             if(resultState.result && resultState.result.length > 0) {
 
-                newChatSpace.push(<BotDialog key={Date.now()} result={resultState.result} state={resultState} msg={'ได้คำตอบแล้ว!'}/>)
+                newChatSpace.push(<BotDialog key={Date.now()} pull={chatScroll} result={resultState.result} state={resultState} msg={'✅ได้คำตอบแล้ว!'}/>)
                 setChatSpace(newChatSpace);
 
             }
@@ -150,7 +148,7 @@ function ChatBox() {
 
   return (
     <div className="h-[calc(100vh-10rem)]">
-        <Container ref={chatView} className=" flex flex-col gap-4 overflow-auto h-full py-4">
+        <Container ref={chatView} className="scroll-smooth flex flex-col gap-4 overflow-auto h-full py-4">
             {chatSpace}
         </Container>
         <ChatBar disable={msgSend} onSend={handleSendMsg}/>

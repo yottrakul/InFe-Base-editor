@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react'
 import { SiProbot } from 'react-icons/si'
 import type { Fact } from '@/pages/facts'
 import type { ChatState } from '@/lib/ChatStatusT'
+import { Typewriter } from 'react-simple-typewriter'
 
 type Props = {
   query: Fact[],
@@ -91,7 +92,7 @@ function UserQueryDialog({query, onFinish, state}:Props) {
             <div className="bg-[#D9D9D9] shadow-md shadow-white/30 max-w-[60%] rounded-xl text-black overflow-hidden">
               <div className="px-4 py-2">
                 <span className="break-words">
-                  Question: <strong>{ask.label}</strong>: {ask.fact? ask.fact:'\'-\''}
+                  <strong><Typewriter typeSpeed={30} words={[`Question --> ${ask.label}: ${ask.fact? ask.fact:'\'-\''}❓`]}/></strong>
                 </span>
               </div>
               <div className="flex">
