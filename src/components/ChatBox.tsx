@@ -8,8 +8,8 @@ import axios from 'axios'
 import { Fact } from '@/pages/facts'
 import type { ChatState } from '@/lib/ChatStatusT'
 
-const FACT_ENDPOINT = 'http://localhost:8000/api/facts';
-const INFER_ENDPOINT = 'http://localhost:8000/api/infer_engine';
+const FACT_ENDPOINT = 'https://vercel-inferance-engine.vercel.app/api/facts';
+const INFER_ENDPOINT = 'https://vercel-inferance-engine.vercel.app/api/infer_engine';
 const defaultState: ChatState = {
     bb: [],
     concludNode: [],

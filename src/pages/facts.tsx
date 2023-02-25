@@ -20,7 +20,7 @@ function facts() {
   const [showAddFact, setShowAddFact] = useState(false);
   const [facts, setFacts] = useState(defaultFact);
   useEffect(() => {
-    axios.get('http://localhost:8000/api/facts').then(res => {
+    axios.get('https://vercel-inferance-engine.vercel.app/api/facts').then(res => {
       setFacts(res.data);
     })
   }, [])
@@ -31,7 +31,7 @@ function facts() {
   //useStateFetch
   const deleteFact = (id: string) => {
     // ติดต่อ DB
-    axios.delete(`http://localhost:8000/api/facts/${id}`);
+    axios.delete(`https://vercel-inferance-engine.vercel.app/api/facts/${id}`);
     setFacts(prev => {
       return prev.filter(fact => {
         return fact.id !== id
@@ -43,7 +43,7 @@ function facts() {
     // ติดต่อ DB
     try {
       console.log(fact)
-      const res = await axios.post('http://localhost:8000/api/facts', fact)
+      const res = await axios.post('https://vercel-inferance-engine.vercel.app/api/facts', fact)
       const result = facts.concat(res.data);
       setFacts(result)
     } catch (error: any) {
@@ -54,7 +54,7 @@ function facts() {
   const editFact = (factIn: Fact) => {
     // ติดต่อ db
     try {
-      const res = axios.put(`http://localhost:8000/api/facts/${factIn.id}`, factIn)
+      const res = axios.put(`https://vercel-inferance-engine.vercel.app/api/facts/${factIn.id}`, factIn)
       const index = facts.findIndex(fact => {
         return fact.id === factIn.id
       })

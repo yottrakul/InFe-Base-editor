@@ -25,8 +25,8 @@ type Rule = {
 };
 
 const defaultRules: Array<Rule> = [];
-const baseURL = "http://localhost:8000/api/infer_engine/";
-const baseRuleURL = "http://localhost:8000/api/rules";
+const baseURL = "https://vercel-inferance-engine.vercel.app/api/infer_engine";
+const baseRuleURL = "https://vercel-inferance-engine.vercel.app/api/rules";
 
 function rules() {
   const [showAddRule, setShowAddRule] = useState(false);

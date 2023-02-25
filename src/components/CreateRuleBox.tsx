@@ -42,8 +42,8 @@ type UserInput = {
 };
 
 const defaultFact: Array<Fact> = [];
-const baseURL: string = 'http://localhost:8000/api/facts';
-const ruleURL: string = 'http://localhost:8000/api/rules'
+const baseURL: string = 'https://vercel-inferance-engine.vercel.app/api/facts';
+const ruleURL: string = 'https://vercel-inferance-engine.vercel.app/api/rules'
 
 function CreateRuleBox({ onClose, onCreate, onEdit, rule }: Props) {
   //State
